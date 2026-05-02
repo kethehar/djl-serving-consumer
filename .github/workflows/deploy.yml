@@ -1,4 +1,4 @@
-name: Build and Deploy Multi-Container DJL1
+name: Build and Deploy Multi-Container DJL
 
 on:
   push:
