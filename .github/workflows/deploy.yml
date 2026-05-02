@@ -8,38 +8,34 @@ jobs:
   build-push-deploy:
     runs-on: ubuntu-latest
     steps:
-      
-name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      
-name: Login to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Login to Docker Hub
+        uses: docker/docker-login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      
-name: Build Model-Server
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: ./djl-serving/Dockerfile
-        push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/djl-serving:latest
+      - name: Build Model-Server
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./djl-serving/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/djl-serving:latest
 
-      
-name: Build Consumer
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/djl-serving-consumer:latest
+      - name: Build Consumer
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/djl-serving-consumer:latest
 
-      
-name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v3
-      with:
-        app-name: 'djl-servingconsumer-kethehar'
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        configuration-file: djl-serving/docker-compose.yml
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'djl-servingconsumer-kethehar'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          configuration-file: djl-serving/docker-compose.yml
