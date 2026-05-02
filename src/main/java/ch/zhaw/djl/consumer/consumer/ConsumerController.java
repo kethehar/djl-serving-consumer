@@ -28,9 +28,12 @@ public class ConsumerController {
     public ResponseEntity<String> predict(@RequestParam("image") MultipartFile image) throws Exception {
         InputStream is = new ByteArrayInputStream(image.getBytes());
 
-        var uri = "http://localhost:8080/predictions/traced_resnet18";
+    
+        var uri = "http://localhost:8080/predictions/resnet18";
+        
         if (this.isDockerized()) {
-            uri = "http://model-service:8080/predictions/traced_resnet18";
+
+            uri = "http://model-service:8080/predictions/resnet18";
         }
 
         var webClient = WebClient.create();
@@ -42,6 +45,7 @@ public class ConsumerController {
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
+                
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(result);
@@ -51,5 +55,4 @@ public class ConsumerController {
         File f = new File("/.dockerenv");
         return f.exists();
     }
-
 }
