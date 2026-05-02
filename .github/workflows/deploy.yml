@@ -23,7 +23,8 @@ name: Login to Docker Hub
 name: Build Model-Server
       uses: docker/build-push-action@v5
       with:
-        context: ./djl-serving
+        context: .
+        file: ./djl-serving/Dockerfile
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/djl-serving:latest
 
