@@ -29,11 +29,9 @@ public class ConsumerController {
         InputStream is = new ByteArrayInputStream(image.getBytes());
 
     
-        var uri = "http://localhost:8080/predictions/resnet18";
-        
-        if (this.isDockerized()) {
-
-            uri = "http://model-service:8080/predictions/resnet18";
+        var uri = System.getenv("MODEL_SERVICE_URL");
+        if (uri == null || uri.isEmpty()) {
+            uri = "http://localhost:8080/predictions/resnet18";
         }
 
         var webClient = WebClient.create();
@@ -51,8 +49,4 @@ public class ConsumerController {
                 .body(result);
     }
 
-    private boolean isDockerized() {
-        File f = new File("/.dockerenv");
-        return f.exists();
-    }
 }

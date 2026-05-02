@@ -25,9 +25,7 @@ function checkFiles(files) {
 
     // Upload
     const formData = new FormData();
-    for (const name in files) {
-        formData.append("image", files[name]);
-    }
+    formData.append("image", file);
 
     fetch('/analyze', {
         method: 'POST',
