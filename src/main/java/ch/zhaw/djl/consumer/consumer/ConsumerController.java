@@ -25,28 +25,34 @@ public class ConsumerController {
     }
 
     @PostMapping(path = "/analyze", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> predict(@RequestParam("image") MultipartFile image) throws Exception {
-        InputStream is = new ByteArrayInputStream(image.getBytes());
+    public ResponseEntity<String> predict(@RequestParam("image") MultipartFile image) {
+        try {
+            InputStream is = new ByteArrayInputStream(image.getBytes());
 
-    
-        var uri = System.getenv("MODEL_SERVICE_URL");
-        if (uri == null || uri.isEmpty()) {
-            uri = "http://localhost:8080/predictions/resnet18";
+            var uri = System.getenv("MODEL_SERVICE_URL");
+            if (uri == null || uri.isEmpty()) {
+                uri = "http://localhost:8080/predictions/resnet18";
+            }
+
+            var webClient = WebClient.create();
+            Resource resource = new InputStreamResource(is);
+            var result = webClient.post()
+                    .uri(uri)
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
+                    .body(BodyInserters.fromResource(resource))
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+                    
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("{\"error\": \"" + e.getMessage() + "\"}");
         }
-
-        var webClient = WebClient.create();
-        Resource resource = new InputStreamResource(is);
-        var result = webClient.post()
-                .uri(uri)
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .body(BodyInserters.fromResource(resource))
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
-                
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(result);
     }
 
 }

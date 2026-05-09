@@ -1,4 +1,4 @@
-name: Build and Deploy Multi-Container DJL1
+name: Build and Deploy Multi-Container DJL
 
 on:
   push:
@@ -42,10 +42,3 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/djl-serving-consumer:latest
-
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'mdm-serving-consumer-kethehar'
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          configuration-file: djl-serving/docker-compose.yml
